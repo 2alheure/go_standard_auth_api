@@ -1,17 +1,17 @@
 package routes
 
 import (
-	"fmt"
-	"net/http"
+	_ "fmt"
+	_ "net/http"
 
-	"github.com/gorilla/mux"
+	_ "github.com/gorilla/mux"
 
-	"github.com/2alheure/go_standard_auth_api/helpers"
+	_ "github.com/2alheure/go_standard_auth_api/helpers"
 	"github.com/2alheure/go_standard_auth_api/controllers"
 )
 
-func (router http.Handler) InitAuthRoutes() (router http.Handler) {
-	subrouter := router.PathPrefix("/auth/").Subrouter()
+func (router *MuxRouter) InitAuthRoutes() (*MuxRouter) {
+	subrouter := router.MR.PathPrefix("/auth/").Subrouter()
 
 	/**
 	* @api {get} / Auth

@@ -1,0 +1,1 @@
+cp .env my.env

@@ -3,13 +3,14 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
+	_ "github.com/gorilla/mux"
+	_ "github.com/joho/godotenv"
 
-	"github.com/2alheure/go_standard_auth_api/models"
-	"github.com/2alheure/go_standard_auth_api/helpers"
-	"github.com/2alheure/go_standard_auth_api/controllers"
+	_ "github.com/2alheure/go_standard_auth_api/models"
+	_ "github.com/2alheure/go_standard_auth_api/helpers"
+	_ "github.com/2alheure/go_standard_auth_api/controllers"
 	"github.com/2alheure/go_standard_auth_api/routes"
 )
 
@@ -18,7 +19,7 @@ func main() {
 
 	// Change address + port for config value
 	server := &http.Server{
-		Handler:      router,
+		Handler:      router.MR,
 		Addr:         "127.0.0.1:8000",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

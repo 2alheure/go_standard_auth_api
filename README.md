@@ -10,6 +10,9 @@ This project is a simple auth API written in Go. It's been thought to follow the
 
 It includes a handling for login, registering, recovering and getting information on an account. It creates and uses a token.
 
+
+It has been inspired by [https://medium.com/@adigunhammedolalekan/build-and-deploy-a-secure-rest-api-with-go-postgresql-jwt-and-gorm-6fadf3da505b](the article of Adigun Hammed Olalekan). Go check his work.
+
 ## Init the project
 In order for the project to run, you need to set up your environment. To do so, please create a file named `my.env` at the root of the project, following the same pattern as the provided `.env` file.  
 Then you can `go build` the app.

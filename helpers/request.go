@@ -1,8 +1,9 @@
 package helpers
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
+	_ "net/url"
 )
 
 // Params will handle request parameters expectations
@@ -23,40 +24,42 @@ func (err ParamError) Error() string {
 	return "Bad request parameters."
 }
 
-// Mandatory is here to add args to mandatory parameters
-func (params *Params) Mandatory(args ...string) {
-	params.Mandatory = append(params.Mandatory, args)
+// AddMandatory is here to add args to mandatory parameters
+func (params *Params) AddMandatory(args ...string) {
+	params.Mandatory = append(params.Mandatory, args...)
 }
 
-// Optionnal is here to add args to optionnal parameters
-func (params *Params) Optionnal(args ...string) {
-	params.Optionnal = append(params.Optionnal, args)
+// AddOptionnal is here to add args to optionnal parameters
+func (params *Params) AddOptionnal(args ...string) {
+	params.Optionnal = append(params.Optionnal, args...)
 }
 
 // CheckParams will search through httpRequest.Form to examine given POST parameters
 // and through url.value to examine given URL parameters
-func CheckParams(r *http.Request, get Params, post Params) (getErrors ParamError, postErrors ParamError) {
-	getErrors := ParamError{}
-	postErrors := ParamError{}
+func CheckParams(r *http.Request, get *Params, post *Params) (getErrors *ParamError, postErrors *ParamError) {
+	getErrors = new(ParamError)
+	postErrors = new(ParamError)
 
-	if len(get.Mandatory) != 0 || len(get.Optionnal) != 0 {
-		query, err := url.ParseQuery(r.QueryString)		// Needed function
+	if len(get.Mandatory) != 0 || len(get.Optionnal) != 0 {		// Checking GET params
+		fmt.Print(r.URL.Query())
 	}
 	
 	
-	if len(post.Mandatory) != 0 || len(post.Optionnal) != 0 {
+	if len(post.Mandatory) != 0 || len(post.Optionnal) != 0 {	// Checking POST params
 		r.ParseForm()
+		reqForm := r.Form
 
-		for key, val := range r.Form {		// Checks whether key is an extra
-			// Need : isset function
-			if !isset(get.Mandatory, key) {
+		for key, _ := range r.Form {		// Checks whether key is an extra
+			_, ok := InArray(get.Mandatory, key); 
+			_, ok2 := InArray(get.Optionnal, key); 
+			if !ok && !ok2 {
 				getErrors.Extra = append(getErrors.Extra, key)
 			}
 		}
 
-		for key, val = range post.Mandatory {
-			if testVal := r.Form(key) ; testVal == "" {		// Checks whether key is missing
-				postErrors.Miss = append(postErrors.Miss, key)
+		for _, val := range post.Mandatory {
+			if testVal, ok := reqForm[val] ; ok && len(testVal) > 0 {		// Checks whether key is missing
+				postErrors.Miss = append(postErrors.Miss, val)
 			}
 		}
 	}

@@ -10,8 +10,13 @@ import (
 func AccountInfo(w http.ResponseWriter, r *http.Request) {}
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	wanted := []string{"id"}
-	_, _ := helpers.CheckParams(r, wanted, nil)
+	post := new(helpers.Params)
+	post.AddMandatory("id")
+
+	getErr, postErr := helpers.CheckParams(r, nil, post)
+
+	helpers.HandleError(getErr)
+	helpers.HandleError(postErr)
 }
 
 func AccountUpdate(w http.ResponseWriter, r *http.Request) {}

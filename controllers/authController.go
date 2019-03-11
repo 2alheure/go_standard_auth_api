@@ -11,7 +11,7 @@ func AccountInfo(w http.ResponseWriter, r *http.Request) {}
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	wanted := []string{"id"}
-	helpers.CheckParams(r, wanted, nil)
+	_, _ := helpers.CheckParams(r, wanted, nil)
 }
 
 func AccountUpdate(w http.ResponseWriter, r *http.Request) {}

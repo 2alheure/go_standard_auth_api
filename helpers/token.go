@@ -30,7 +30,9 @@ func CheckToken(r *http.Request) (*TokenContent, error) {
 		return []byte(os.Getenv("SECRET_TOKEN")), nil
 	})
 
-	HandleError(err)
+	if err != nil {
+		return nil, errors.New("Error while parsing token.")
+	}
 
 	if !token.Valid {
 		return nil, errors.New("Invalid token.")

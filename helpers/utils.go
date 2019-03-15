@@ -47,3 +47,13 @@ func InStringArray(needle string, haystack []string) (index int, exists bool) {
 
 	return
 }
+
+func IsIndexOfMap(needle string, haystack map[string]interface{}) bool {
+	for key, _ := range haystack {
+		if needle == key {
+			return true
+		}
+	}
+
+	return false
+}

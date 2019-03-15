@@ -8,12 +8,13 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/2alheure/go_standard_auth_api/routes"
-	"github.com/2alheure/go_standard_auth_api/helpers"
 )
 
 func main() {
 	err := godotenv.Load("my.env")
-	helpers.HandleError(err)
+	if err != nil {
+		log.Fatal("Unable to access .env variables.")
+	}
 
 	router := routes.InitRouter()
 	port := os.Getenv("PORT")

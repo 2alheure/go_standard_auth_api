@@ -20,12 +20,32 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		msg = helpers.BadParamMessage(paramError)
 	} else {
 		msg = helpers.OKMessage()
+		
+		token, err := helpers.CreateToken(42)
+		if err != nil {
+			msg = helpers.TokenErrorMessage(err)
+		} else {
+			msg["token"] = token
+			helpers.WriteToken(w, token)
+		}
 	}
 
 	helpers.Respond(w, msg)
 }
 
-func AccountUpdate(w http.ResponseWriter, r *http.Request) {}
+func AccountUpdate(w http.ResponseWriter, r *http.Request) {
+	_, err := helpers.CheckToken(r)
+
+	var msg map[string]interface{}
+	if err != nil {
+		msg = helpers.ErrorMessage(err)
+	} else {
+		helpers.RewriteToken(w, r)
+		msg = helpers.OKMessage()
+	}
+
+	helpers.Respond(w, msg)
+}
 
 func DeleteAccount(w http.ResponseWriter, r *http.Request) {}
 

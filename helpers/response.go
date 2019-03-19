@@ -17,6 +17,15 @@ func OKMessage() (map[string]interface{}) {
 	return Message(true, 200, "OK")
 }
 
+func WriteToken(w http.ResponseWriter, token string) {
+	w.Header().Add("Authorization", token)
+}
+
+func RewriteToken(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("Authorization")
+	w.Header().Add("Authorization", token)
+}
+
 func Respond(w http.ResponseWriter, data map[string] interface{})  {
 	w.Header().Add("Content-Type", "application/json")
 	if val, ok := data["http"]; val != "" && ok {

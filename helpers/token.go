@@ -3,7 +3,6 @@ package helpers
 import (
 	"net/http"
 	"strings"
-	"errors"
 	"os"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -14,15 +13,15 @@ type TokenContent struct {
 	jwt.StandardClaims
 }
 
-func CheckToken(r *http.Request) (*TokenContent, error) {
+func CheckToken(r *http.Request) (*TokenContent, *StdErr) {
 	tokenHeader := r.Header.Get("Authorization")
 	if tokenHeader == "" {
-		return nil, errors.New("Missing auth token.")
+		return nil, &StdErr{"Missing auth token.", 400}
 	}
 
 	splitted := strings.Split(tokenHeader, " ")	// Token normally comes in form "Bearer <token>"
 	if len(splitted) != 2 {
-		return nil, errors.New("Malformed auth token.")
+		return nil, &StdErr{"Malformed auth token.", 400}
 	}
 
 	tokenContent := &TokenContent{}
@@ -30,14 +29,16 @@ func CheckToken(r *http.Request) (*TokenContent, error) {
 		return []byte(os.Getenv("SECRET_TOKEN")), nil
 	})
 
-	if err != nil {
-		return nil, errors.New("Error while parsing token.")
-	}
-
-	if !token.Valid {
-		return nil, errors.New("Invalid token.")
+	if !token.Valid || err != nil {
+		return nil, &StdErr{"Invalid token.", 409}
 	}
 
 	return tokenContent, nil
 }
 
+func CreateToken(userID int) (string, error) {
+	tk := &TokenContent{UserID: userID}
+	tokenSign := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
+	token, err := tokenSign.SignedString([]byte(os.Getenv("SECRET_TOKEN")))
+	return "Bearer "+token, err
+}

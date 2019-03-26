@@ -57,3 +57,7 @@ func IsIndexOfMap(needle string, haystack map[string]interface{}) bool {
 
 	return false
 }
+
+func HashPassword(psw string) string {
+	return psw
+}

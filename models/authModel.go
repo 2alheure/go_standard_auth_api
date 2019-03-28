@@ -34,7 +34,7 @@ func AccountInfo(userID int) (map[string]interface{}) {
 
 func Login(login string, password string) (int, bool) {
 	user := User{}
-	if errors := DB.Where("login=? AND password=?", login, password).First(&user).GetErrors() ; len(errors) > 0 {
+	if errors := DB.Where("login=? AND password=?", login, helpers.HashPassword(password)).First(&user).GetErrors() ; len(errors) > 0 {
 		fmt.Println(errors)
 		return 0, false
 	} else {
@@ -42,8 +42,15 @@ func Login(login string, password string) (int, bool) {
 	}
 }
 
-func AccountUpdate(userID int, r *http.Request) (map[string]interface{}) {
-	return map[string]interface{} {}
+func AccountUpdate(userID int, r *http.Request) (bool) {
+	user := User{ID: userID, Email: r.FormValue("email"), Login: helpers.HashPassword(r.FormValue("login")), Password: r.FormValue("password")}
+
+	if errors := DB.Model(&user).Updates(user).GetErrors() ; len(errors) > 0 {
+		fmt.Println(errors)
+		return false
+	} else {
+		return true
+	}
 }
 
 func DeleteAccount(userID int) (bool) {
@@ -57,7 +64,7 @@ func DeleteAccount(userID int) (bool) {
 }
 
 func Register(email string, login string, password string) (map[string]interface{}) {
-	user := User{Email: email, Login: login, Password: password}
+	user := User{Email: email, Login: login, Password: helpers.HashPassword(password)}
 
 	if errors := DB.Create(&user).GetErrors() ; len(errors) > 0 {
 		fmt.Println(errors)

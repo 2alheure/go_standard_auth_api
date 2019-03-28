@@ -9,7 +9,7 @@ import (
 // Params will handle request parameters expectations
 type Params struct {
 	Mandatory		[]string			`json:"mandatory,omitempty"`
-	Optionnal		[]string			`json:"optionnal,omitempty"`
+	Optional		[]string			`json:"optional,omitempty"`
 }
 
 // ParamError will handle all parameters errors
@@ -36,9 +36,9 @@ func (params *Params) AddMandatory(args ...string) {
 	params.Mandatory = append(params.Mandatory, args...)
 }
 
-// AddOptionnal is here to add args to optionnal parameters
-func (params *Params) AddOptionnal(args ...string) {
-	params.Optionnal = append(params.Optionnal, args...)
+// AddOptional is here to add args to optional parameters
+func (params *Params) AddOptional(args ...string) {
+	params.Optional = append(params.Optional, args...)
 }
 
 // CheckParams will search through httpRequest.Form to examine given POST parameters
@@ -52,10 +52,10 @@ func CheckParams(r *http.Request, get *Params, post *Params) (err *ParamError) {
 	reqURL := r.URL.Query()
 
 
-	if get != nil && (len(get.Mandatory) != 0 || len(get.Optionnal) != 0) {		// Checking GET params
+	if get != nil && (len(get.Mandatory) != 0 || len(get.Optional) != 0) {		// Checking GET params
 		for key, _ := range reqURL {		// Checks whether key is an extra
 			_, ok := InArray(key, get.Mandatory); 
-			_, ok2 := InArray(key, get.Optionnal); 
+			_, ok2 := InArray(key, get.Optional); 
 			if !ok && !ok2 {
 				err.GET.Extra = append(err.GET.Extra, key)
 			}
@@ -74,10 +74,10 @@ func CheckParams(r *http.Request, get *Params, post *Params) (err *ParamError) {
 	}
 
 	
-	if post != nil && (len(post.Mandatory) != 0 || len(post.Optionnal) != 0) {	// Checking POST params
+	if post != nil && (len(post.Mandatory) != 0 || len(post.Optional) != 0) {	// Checking POST params
 		for key, _ := range reqForm {		// Checks whether key is an extra
 			_, ok := InArray(key, post.Mandatory); 
-			_, ok2 := InArray(key, post.Optionnal); 
+			_, ok2 := InArray(key, post.Optional); 
 			if !ok && !ok2 {
 				err.POST.Extra = append(err.POST.Extra, key)
 			}

@@ -16,7 +16,8 @@ func AccountInfo(w http.ResponseWriter, r *http.Request) {
 		msg = helpers.TokenErrorMessage(err)
 	} else {
 		helpers.RewriteToken(w, r)
-		msg = models.AccountInfo(token.UserID)
+		msg = helpers.OKMessage()
+		msg["info"] = models.AccountInfo(token.UserID)["user"]
 	}
 
 	helpers.Respond(w, msg)
@@ -32,7 +33,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if paramError != nil {
 		msg = helpers.BadParamMessage(paramError)
 	} else {
-		userID, isAuth := models.Login(r.FormValue("login"), helpers.HashPassword(r.FormValue("password")))
+		userID, isAuth := models.Login(r.FormValue("login"), r.FormValue("password"))
 		
 		if isAuth {
 			token, err := models.CreateToken(userID)
@@ -58,9 +59,24 @@ func AccountUpdate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		msg = helpers.ErrorMessage(err)
 	} else {
-		helpers.RewriteToken(w, r)
-		msg = models.AccountUpdate(token.UserID, r)
-		msg["info"] = models.AccountInfo(token.UserID)
+		post := new(helpers.Params)
+		post.AddOptional("login", "password", "email")
+	
+		paramError := helpers.CheckParams(r, nil, post)
+	
+		if paramError != nil {
+			msg = helpers.BadParamMessage(paramError)
+		} else {
+			helpers.RewriteToken(w, r)
+			isUpdated := models.AccountUpdate(token.UserID, r)
+
+			if isUpdated {
+				msg = helpers.Message(true, 200, "Update succeed.")
+				msg["info"] = models.AccountInfo(token.UserID)["user"]
+			} else {
+				msg = helpers.Message(false, 500, "An unexpected error happened while updating. Changes may not have been done.")
+			}
+		}
 	}
 
 	helpers.Respond(w, msg)

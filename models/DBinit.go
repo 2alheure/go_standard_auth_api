@@ -18,15 +18,15 @@ func DBInit() (error) {
         return err
     }
 
-    dbHost := os.Getenv("DB_HOST")
     dbUser := os.Getenv("DB_USER")
     dbPass := os.Getenv("DB_PASS")
-    dbPort := os.Getenv("DB_PORT")
+    // dbHost := os.Getenv("DB_HOST")
+    // dbPort := os.Getenv("DB_PORT")
     dbName := os.Getenv("DB_NAME")
 
     // TODO
     // Build DB URI in order to connect
-    dbURI := fmt.Sprintf("%s:%s@%s:%S/%s?charset=utf8&parseTime=True&loc=Local", dbUser, dbPass, dbHost, dbPort, dbName)
+    dbURI := fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local", dbUser, dbPass, dbName)
 
     DB, err = gorm.Open("mysql", dbURI)
     

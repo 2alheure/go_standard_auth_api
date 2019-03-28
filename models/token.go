@@ -1,4 +1,4 @@
-package helpers
+package models
 
 import (
 	"net/http"
@@ -6,6 +6,8 @@ import (
 	"os"
 
 	jwt "github.com/dgrijalva/jwt-go"
+
+	"github.com/2alheure/go_standard_auth_api/helpers"
 )
 
 type TokenContent struct {
@@ -13,15 +15,15 @@ type TokenContent struct {
 	jwt.StandardClaims
 }
 
-func CheckToken(r *http.Request) (*TokenContent, *StdErr) {
+func CheckToken(r *http.Request) (*TokenContent, *helpers.StdErr) {
 	tokenHeader := r.Header.Get("Authorization")
 	if tokenHeader == "" {
-		return nil, &StdErr{"Missing auth token.", 400}
+		return nil, &helpers.StdErr{"Missing auth token.", 400}
 	}
 
 	splitted := strings.Split(tokenHeader, " ")	// Token normally comes in form "Bearer <token>"
 	if len(splitted) != 2 {
-		return nil, &StdErr{"Malformed auth token.", 400}
+		return nil, &helpers.StdErr{"Malformed auth token.", 400}
 	}
 
 	tokenContent := &TokenContent{}
@@ -30,10 +32,16 @@ func CheckToken(r *http.Request) (*TokenContent, *StdErr) {
 	})
 
 	if !token.Valid || err != nil {
-		return nil, &StdErr{"Invalid token.", 409}
+		return nil, &helpers.StdErr{"Invalid token.", 409}
 	}
 
-	return tokenContent, nil
+	// Check if userID is valid
+	user := User{}
+	if errors := DB.Where("id = ?", tokenContent.UserID).First(&user).GetErrors() ; len(errors) > 0 {
+		return nil, &helpers.StdErr{"An unexpected error happened while checking authorization.", 500}
+	} else {
+		return tokenContent, nil
+	}
 }
 
 func CreateToken(userID int) (string, error) {

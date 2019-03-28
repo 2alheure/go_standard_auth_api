@@ -22,6 +22,10 @@ func main() {
 		log.Fatal("Unable to connect to DB.")
 	}
 
+	defer models.DB.Close()
+
+	models.DB.AutoMigrate(&models.User{})
+
 	router := routes.InitRouter()
 	port := os.Getenv("PORT")
 	address := os.Getenv("ADDRESS")

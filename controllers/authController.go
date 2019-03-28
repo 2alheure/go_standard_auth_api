@@ -3,13 +3,13 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/2alheure/go_standard_auth_api/helpers"
 	"github.com/2alheure/go_standard_auth_api/models"
+	"github.com/2alheure/go_standard_auth_api/helpers"
 )
 
 
 func AccountInfo(w http.ResponseWriter, r *http.Request) {
-	token, err := helpers.CheckToken(r)
+	token, err := models.CheckToken(r)
 
 	var msg map[string]interface{}
 	if err != nil {
@@ -35,7 +35,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		userID, isAuth := models.Login(r.FormValue("login"), helpers.HashPassword(r.FormValue("password")))
 		
 		if isAuth {
-			token, err := helpers.CreateToken(userID)
+			token, err := models.CreateToken(userID)
 			if err != nil {
 				msg = helpers.TokenErrorMessage(err)
 			} else {
@@ -52,7 +52,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func AccountUpdate(w http.ResponseWriter, r *http.Request) {
-	token, err := helpers.CheckToken(r)
+	token, err := models.CheckToken(r)
 
 	var msg map[string]interface{}
 	if err != nil {
@@ -67,13 +67,19 @@ func AccountUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteAccount(w http.ResponseWriter, r *http.Request) {
-	token, err := helpers.CheckToken(r)
+	token, err := models.CheckToken(r)
 
 	var msg map[string]interface{}
 	if err != nil {
 		msg = helpers.ErrorMessage(err)
 	} else {
-		msg = models.DeleteAccount(token.UserID)
+		accountIsDeleted := models.DeleteAccount(token.UserID)
+
+		if accountIsDeleted {
+			msg = helpers.Message(true, 200, "Account deleted successfully.")
+		} else {
+			msg = helpers.Message(false, 500, "An unexpected error occured while deleting your account. It may have not been deleted.")
+		}
 	}
 
 	helpers.Respond(w, msg)
@@ -89,7 +95,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	if paramError != nil {
 		msg = helpers.BadParamMessage(paramError)
 	} else {
-		msg = models.Register(r.FormValue("email"), r.FormValue("login"), r.FormValue("password"))
+		msg = models.Register(r.FormValue("email"), r.FormValue("login"), helpers.HashPassword(r.FormValue("password")))
 	}
 
 	helpers.Respond(w, msg)

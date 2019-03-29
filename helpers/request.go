@@ -27,6 +27,36 @@ type DetailParamError struct {
 	Extra			[]string			`json:"extra,omitempty"`
 }
 
+/**
+* @apiDefine BadParamError
+* @apiError 400 Bad Parameter Error
+* @apiErrorExample {json} BadParamError:
+* HTTP/1.1 400 Bad Request
+* {
+*   "errors": {
+*     "url": {
+*       "extra": [
+*         "too_much"
+*       ],
+*       "miss": [
+*         "not_enough"
+*       ]
+*     },
+*     "body": {
+*       "extra": [
+*         "undesirable"
+*       ],
+*       "miss": [
+*         "wanted"
+*       ]
+*     }
+*   },
+*   "http": 400,
+*   "message": "Bad request parameters.",
+*   "status": false
+* }
+*/
+
 func (err ParamError) Error() string {
 	return "Bad request parameters."
 }

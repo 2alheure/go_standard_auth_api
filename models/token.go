@@ -15,15 +15,42 @@ type TokenContent struct {
 	jwt.StandardClaims
 }
 
+/** 
+* @apiDefine TokenNeeded
+* @apiHeader (Authorization) {string} Authorization A Bearer token for authorization. Has to be of the form <code>Bearer xxx.yyy.zzz</code>
+* @apiError 401 Token error
+* @apiErrorExample {json} MissingToken:
+*     HTTP/1.1 401 Unauthorized
+*     {
+*       "status": false,
+*       "http": 401
+*       "message": "Missing auth token."
+*     }
+* @apiErrorExample {json} InvalidToken:
+*     HTTP/1.1 401 Unauthorized
+*     {
+*       "status": false,
+*       "http": 401
+*       "message": "Invalid token."
+*     }
+* @apiErrorExample {json} MalformedToken:
+*     HTTP/1.1 401 Unauthorized
+*     {
+*       "status": false,
+*       "http": 401
+*       "message": "Malformed auth token."
+*     }
+*/
+
 func CheckToken(r *http.Request) (*TokenContent, *helpers.StdErr) {
 	tokenHeader := r.Header.Get("Authorization")
 	if tokenHeader == "" {
-		return nil, &helpers.StdErr{"Missing auth token.", 400}
+		return nil, &helpers.StdErr{"Missing auth token.", 401}
 	}
 
 	splitted := strings.Split(tokenHeader, " ")	// Token normally comes in form "Bearer <token>"
 	if len(splitted) != 2 {
-		return nil, &helpers.StdErr{"Malformed auth token.", 400}
+		return nil, &helpers.StdErr{"Malformed auth token.", 401}
 	}
 
 	tokenContent := &TokenContent{}
@@ -32,7 +59,7 @@ func CheckToken(r *http.Request) (*TokenContent, *helpers.StdErr) {
 	})
 
 	if !token.Valid || err != nil {
-		return nil, &helpers.StdErr{"Invalid token.", 409}
+		return nil, &helpers.StdErr{"Invalid token.", 401}
 	}
 
 	// Check if userID is valid

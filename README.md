@@ -20,11 +20,13 @@ Then you can `go build` the app.
 Or you can just execute the `install.sh` file, which does exactly the same.
 
 ## Documentation
-Complete documentation can be found in the `doc` directory. It has been generated using [apiDoc](https://apidocjs.com). An online version is available on [my own server]().
+Complete documentation can be found in the `docs` directory. It has been generated using [apiDoc](https://apidocjs.com). An online version is available on [my website]().
 
 ## Dependances
 This project uses some dependances :
 - [github.com/gorilla/mux](https://github.com/gorilla/mux)
 - [github.com/joho/godotenv](https://github.com/joho/godotenv)
+- [github.com/jinzhu/gorm](https://github.com/jinzhu/gorm)
+- [github.com/dgrijalva/jwt-go](https://github.com/dgrijalva/jwt-go)
 
 Go check their work !

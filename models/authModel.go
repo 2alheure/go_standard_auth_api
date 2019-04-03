@@ -12,14 +12,12 @@ import (
 )
 
 type User struct {
-	// gorm.Model
-	ID				int						`gorm:"primary_key",json:"id,omitempty"`
+	ID				int						`gorm:"primary_key";json:"id,omitempty"`
 	Pseudo			string					`json:"pseudo,omitempty"`
 	Login			string					`json:"login,omitempty"`
 	Password		string					`json:"-"`
 	Email			string					`json:"email,omitempty"`
 	CreatedAt		*time.Time				`json:"signUpDate,omitempty"`
-	// Token			*helpers.TokenContent	`json:"token,omitempty"`
 }
 
 func AccountInfo(userID int) (map[string]interface{}) {
